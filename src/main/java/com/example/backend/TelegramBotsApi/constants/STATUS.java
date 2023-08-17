@@ -1,0 +1,24 @@
+package com.example.backend.TelegramBotsApi.constants;
+
+public enum STATUS {
+
+//    status for telegram user
+
+    START,
+    HELP,
+
+    //    STEP 1
+    START_MENU_WAITING,ADD_NEW_CLIENT, SEND_CUSTOMER_CATEGORIES, SEND_TERRITORIES, SEND_FULL_NAME, SEND_ADDRESS, SEND_PHONE, SEND_INN, SEND_LOCATION,SEE_CLIENTS,
+
+    //    STEP 2
+    GET_CLIENT_DATA,
+//    ichki state
+
+
+    //    STEP 3
+    UPDATE_CLIENT, ENTER_PHONE, UPDATE_FULL_NAME, UPDATE_PHONE, UPDATE_LOCATION, SAVE_UPDATED_CLIENT,
+
+    //    step 4
+    SEARCH_CLIENT, PHONE_OR_NAME_SEARCHED_CLIENT
+
+}
