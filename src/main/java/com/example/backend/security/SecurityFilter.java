@@ -64,7 +64,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         } else {
             if (!request.getRequestURI().equals("")){
             // Ochiq yo'llarni oxirida "/public" qo'yilsin
-            if (!request.getRequestURI().endsWith("/public") {
+            if (!request.getRequestURI().endsWith("/public")) {
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.setContentType("application/json");
                 response.getWriter().write("Token is not found");
