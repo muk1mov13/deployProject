@@ -36,7 +36,8 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String access_token = request.getHeader("Authorization");
-        if (access_token != null) {
+        if(request.getRequestURI.startsWith("/api")){
+            if (access_token != null) {
             try {
                 String phone = jwtService.extractSubjectFromJWT(access_token);
                 User user = userRepository.findByPhone(phone).orElseThrow(RuntimeException::new);
@@ -62,7 +63,6 @@ public class SecurityFilter extends OncePerRequestFilter {
                 response.getWriter().close();
             }
         } else {
-            if (!request.getRequestURI().equals("")){
             // Ochiq yo'llarni oxirida "/public" qo'yilsin
             if (!request.getRequestURI().endsWith("/public")) {
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
@@ -70,9 +70,9 @@ public class SecurityFilter extends OncePerRequestFilter {
                 response.getWriter().write("Token is not found");
                 response.getWriter().close();
             }
-            }
         }
         filterChain.doFilter(request, response);
     }
+        }
 }
 
