@@ -62,13 +62,14 @@ public class SecurityFilter extends OncePerRequestFilter {
                 response.getWriter().close();
             }
         } else {
-            System.out.println(request.getRequestURI());
+            if (!request.getRequestURI().equals("")){
             // Ochiq yo'llarni oxirida "/public" qo'yilsin
-            if (!request.getRequestURI().endsWith("/public") || !request.getRequestURI().equals("")) {
+            if (!request.getRequestURI().endsWith("/public") {
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.setContentType("application/json");
                 response.getWriter().write("Token is not found");
                 response.getWriter().close();
+            }
             }
         }
         filterChain.doFilter(request, response);
