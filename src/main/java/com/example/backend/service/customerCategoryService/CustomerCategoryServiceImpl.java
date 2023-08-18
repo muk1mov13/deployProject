@@ -31,7 +31,7 @@ public class CustomerCategoryServiceImpl implements CustomerCategoryService {
 
     @Override
     public HttpEntity<?> getCustomerCategories(Integer page, Integer size, Boolean active, String search) {
-        Pageable pageable = PageRequest.of(page > 0 ? page - 1 : 0, size);
+        Pageable pageable = size==-1 ? Pageable.unpaged() : PageRequest.of(page > 0 ? page - 1 : 0, size);
         if (active == null) {
             Page<CustomerCategory> customerCategories = customerCategoryRepository. findAllByNameContainsIgnoreCaseOrDescriptionContainsIgnoreCaseOrCodeContainsIgnoreCaseOrderByCreatedAtDesc(search, search, search, pageable);
             return ResponseEntity.ok(customerCategories);

@@ -43,7 +43,7 @@ public class ClientServiceImpl implements ClientService{
                                             String search
     ){
 
-        Pageable pageable = PageRequest.of(pageNumber-1, pageSize);
+        Pageable pageable = pageSize==-1 ? Pageable.unpaged() : PageRequest.of(pageNumber > 0 ? pageNumber - 1 : 0, pageNumber);
         return ResponseEntity.ok(clientRepository.findClientsByFilter(active,cities,tin,categories,search,pageable));
     }
 
