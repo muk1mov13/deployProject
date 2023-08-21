@@ -106,10 +106,10 @@ public class ClientServiceImpl implements ClientService{
     }
 
     @Override
-    public HttpEntity<?> editClientData(ReqClientSave client) throws Exception {
-        Client oldClient = clientRepository.findById(client.getId()).orElseThrow(()->new Exception("This client is not found!"));
+    public HttpEntity<?> editClientData(ReqClientSave client, UUID id) throws Exception {
+        Client oldClient = clientRepository.findById(id).orElseThrow(()->new Exception("This client is not found!"));
         Client save = clientRepository.save(new Client(
-                oldClient.getId(),
+                id,
                 client.getName(),
                 client.getAddress(),
                 client.getTelephone(),
