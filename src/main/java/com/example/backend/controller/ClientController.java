@@ -52,9 +52,9 @@ public class ClientController {
         return clientService.saveNewClient(newClient);
     }
     @PreAuthorize("hasRole('ROLE_SUPERVISOR')")
-    @PutMapping
-    public HttpEntity<?> editNewClient(@RequestBody ReqClientSave newClient) throws Exception {
-        return clientService.editClientData(newClient);
+    @PutMapping("edit/{id}")
+    public HttpEntity<?> editNewClient(@RequestBody ReqClientSave newClient, @PathVariable UUID id) throws Exception {
+        return clientService.editClientData(newClient,id);
     }
     @PreAuthorize("hasRole('ROLE_SUPERVISOR')")
     @GetMapping("/excel")

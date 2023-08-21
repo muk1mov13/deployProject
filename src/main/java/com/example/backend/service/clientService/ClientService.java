@@ -39,5 +39,5 @@ public interface ClientService {
 
     HttpEntity<?> getClientsForMap();
 
-    HttpEntity<?> editClientData(ReqClientSave newClient) throws Exception;
+    HttpEntity<?> editClientData(ReqClientSave newClient, UUID id) throws Exception;
 }
