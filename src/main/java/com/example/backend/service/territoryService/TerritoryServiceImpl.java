@@ -63,7 +63,7 @@ public class TerritoryServiceImpl implements TerritoryService {
 
     @Override
     public HttpEntity<?> getTerritories(Integer page, Integer size, Boolean active, String search) {
-        Pageable pageable = size==-1 ? Pageable.unpaged() : PageRequest.of(page > 0 ? page - 1 : 0, size);
+        Pageable pageable = PageRequest.of(page > 0 ? page - 1 : 0, size);
         // Check if search is provided but active is null, then search by name or region
         if (active == null) {
             Page<Territory> searchedTerritories = territoryRepository.findAllByNameContainsIgnoreCaseOrRegionContainsIgnoreCaseOrderByCreatedAtDesc(search, search, pageable);

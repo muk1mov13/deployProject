@@ -81,7 +81,7 @@ public class Mybot extends TelegramLongPollingBot {
     private static final Logger logger = LoggerFactory.getLogger(Mybot.class);
 
     private String username = "@tujjor_bot";
-    private String TOKEN = "6137245232:AAE-D41wsTMY6O8ZOTtORyCFt_vutW_SBaw";
+    private String TOKEN = "6137245232:AAHyWQnMXR1N-WDkh5D4F8mrVEmZzglyVCg";
 
 
     @SneakyThrows

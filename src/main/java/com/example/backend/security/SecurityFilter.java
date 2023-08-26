@@ -35,49 +35,43 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
         String access_token = request.getHeader("Authorization");
-      if(request.getRequestURI().startsWith("/api")) {
-          if(!request.getRequestURI().equals("")){
-              if (access_token != null) {
-                  try {
-                      String phone = jwtService.extractSubjectFromJWT(access_token);
-                      User user = userRepository.findByPhone(phone).orElseThrow(RuntimeException::new);
-                      UsernamePasswordAuthenticationToken auth =
-                              new UsernamePasswordAuthenticationToken(
-                                      user,
-                                      null,
-                                      user.getAuthorities()
-                              );
-                      auth.setDetails(
-                              new WebAuthenticationDetailsSource().buildDetails(request)
-                      );
-                      SecurityContextHolder.getContext().setAuthentication(auth);
-                  } catch (ExpiredJwtException e) {
-                      response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                      response.setContentType("application/json");
-                      response.getWriter().write("Token has expired");
-                      response.getWriter().close();
-                  } catch (MalformedJwtException e) {
-                      response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                      response.setContentType("application/json");
-                      response.getWriter().write("Token is not valid");
-                      response.getWriter().close();
-                  }
-              } else {
-                  System.out.println(request.getRequestURI());
-                  // Ochiq yo'llarni oxirida "/public" qo'yilsin
-                  if (!request.getRequestURI().endsWith("/public")) {
-                      response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                      response.setContentType("application/json");
-                      response.getWriter().write("Token is not found");
-                      response.getWriter().close();
-                  }
-              }
-          }
-      }
+        if (access_token != null) {
+            try {
+                String phone = jwtService.extractSubjectFromJWT(access_token);
+                User user = userRepository.findByPhone(phone).orElseThrow(RuntimeException::new);
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(
+                                user,
+                                null,
+                                user.getAuthorities()
+                        );
+                auth.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request)
+                );
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            } catch (ExpiredJwtException e) {
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                response.setContentType("application/json");
+                response.getWriter().write("Token has expired");
+                response.getWriter().close();
+            } catch (MalformedJwtException e) {
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                response.setContentType("application/json");
+                response.getWriter().write("Token is not valid");
+                response.getWriter().close();
+            }
+        } else {
+            System.out.println(request.getRequestURI());
+            // Ochiq yo'llarni oxirida "/public" qo'yilsin
+            if (!request.getRequestURI().endsWith("/public") && request.getRequestURI().equals("")) {
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                response.setContentType("application/json");
+                response.getWriter().write("Token is not found");
+                response.getWriter().close();
+            }
+        }
         filterChain.doFilter(request, response);
-        
     }
 }
 

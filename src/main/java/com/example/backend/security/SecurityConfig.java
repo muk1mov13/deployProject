@@ -46,9 +46,10 @@ public class SecurityConfig {
                                 .requestMatchers("/api/company/**").permitAll()
                                 .requestMatchers("/api/territory/**").permitAll()
                                 .requestMatchers("/api/tujjor_bot/**").permitAll()
-                                .requestMatchers("/api/**").authenticated()  // Paths starting from /api require authentication
-                                .anyRequest().permitAll() // Permit all other paths (before /api)
+                                .anyRequest()
+                                .authenticated()
                 )
+//                .authenticationProvider(authenticationProvider())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

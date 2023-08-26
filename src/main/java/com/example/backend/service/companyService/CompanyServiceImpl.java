@@ -32,7 +32,7 @@ public class CompanyServiceImpl implements CompanyService {
     //    getcompanies
     @Override
     public HttpEntity<?> getCompany(Integer page, Integer size, String search) {
-        Pageable pageable = size==-1 ? Pageable.unpaged() : PageRequest.of(page > 0 ? page - 1 : 0, size);
+        Pageable pageable = PageRequest.of(page > 0 ? page - 1 : 0, size);
         Page<Company> companies = companyRepository.findAllByRegionContainsIgnoreCaseOrCompany_nameContainsIgnoreCaseOrSupport_phoneContainsIgnoreCaseOrEmailContainsIgnoreCaseOrAddressContainsIgnoreCase(search, pageable);
         return ResponseEntity.ok(companies);
     }
