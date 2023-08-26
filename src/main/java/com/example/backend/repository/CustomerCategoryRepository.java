@@ -15,8 +15,6 @@ import java.util.UUID;
 
 
 public interface CustomerCategoryRepository extends JpaRepository<CustomerCategory, UUID> {
-    Page<CustomerCategory> findAllByNameContainsIgnoreCaseOrDescriptionContainsIgnoreCaseOrCodeContainsIgnoreCaseOrderById(String name, String description, String code, Pageable pageable);
-
     @Query(value = "SELECT * FROM customer_category ", nativeQuery = true)
     Page<CustomerCategory> findAllCustomerCategoriesForBot(Pageable pageable);
 

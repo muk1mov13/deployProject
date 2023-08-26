@@ -26,15 +26,7 @@ import java.util.UUID;
 
 public interface TerritoryRepository extends JpaRepository<Territory, UUID>, JpaSpecificationExecutor<Territory> {
 
-    //    faqat true larni qaytaradi default get funksiyasi uchun
-//    @Query(value = "SELECT * FROM territory WHERE active = true", nativeQuery = true)
-//    Optional<List<Territory>> getTerritoriesActive();
-//
-//    Optional<List<Territory>> getTerritoriesByActive(boolean active);
     Page<Territory> findAllByNameContainsIgnoreCaseOrRegionContainsIgnoreCaseOrderByCreatedAtDesc(String name, String region, Pageable pageable);
-
-//    test uchun ochilgan faqat realniga ishlatilmagan
-    Page<Territory> findAllByActiveAndNameContainsIgnoreCaseOrRegionContainsIgnoreCase(Boolean active, String name, String region, Pageable pageable);
 
     @Query(value = """
 select t.id as value, t.name as label from Territory  t order by t.name
@@ -43,9 +35,6 @@ select t.id as value, t.name as label from Territory  t order by t.name
 
     @Query(value = "SELECT * FROM territory ", nativeQuery = true)
     Page<Territory> findAllTerritoriesForBot(Pageable pageable);
-
-    Page<Territory> findAllByNameContainsIgnoreCaseOrRegionContainsIgnoreCaseOrderById(String name, String region, Pageable pageable);
-
 
     @Query(value = "SELECT * FROM territory " +
             "WHERE (:active is null or active = :active) " +
