@@ -52,45 +52,33 @@ public class JwtService {
     }
 
     public boolean validateToken(String authToken, HttpServletResponse response) throws IOException {
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setContentType("application/json");
         try {
             Jwts.parser().setSigningKey(generateSecretKey()).parseClaimsJws(authToken);
             return true;
         } catch (SignatureException e) {
             // Invalid JWT signature
             System.out.println("invalid signature");
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setContentType("application/json");
             response.getWriter().write("Invalid signature");
-            response.getWriter().close();
         } catch (MalformedJwtException e) {
             // Invalid JWT token
             System.out.println("invalid token");
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setContentType("application/json");
             response.getWriter().write("Invalid token");
-            response.getWriter().close();
         } catch (ExpiredJwtException e) {
             // Expired JWT token
             System.out.println("expired token");
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setContentType("application/json");
             response.getWriter().write("Expired token");
-            response.getWriter().close();
         } catch (UnsupportedJwtException e) {
             // Unsupported JWT token
             System.out.println("unsupported token");
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setContentType("application/json");
             response.getWriter().write("Unsupported token");
-            response.getWriter().close();
         } catch (IllegalArgumentException e) {
             // JWT claims string is empty
             System.out.println("string is empty");
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setContentType("application/json");
             response.getWriter().write("token is empty");
-            response.getWriter().close();
         }
+        response.getWriter().close();
         return false;
     }
 
