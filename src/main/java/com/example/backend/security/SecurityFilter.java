@@ -16,6 +16,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -37,9 +38,11 @@ public class SecurityFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String access_token = request.getHeader("Authorization");
         if (access_token != null) {
-            try {
+            System.out.println("kirdi");
+            if (!jwtService.validateToken(access_token, response)) {
+            } else {
                 String phone = jwtService.extractSubjectFromJWT(access_token);
-                User user = userRepository.findByPhone(phone).orElseThrow(RuntimeException::new);
+                UserDetails user = userRepository.findByPhone(phone).orElseThrow(() -> new UsernameNotFoundException("user not found"));
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(
                                 user,
@@ -50,20 +53,8 @@ public class SecurityFilter extends OncePerRequestFilter {
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
                 SecurityContextHolder.getContext().setAuthentication(auth);
-            } catch (ExpiredJwtException e) {
-                response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                response.setContentType("application/json");
-                response.getWriter().write("Token has expired");
-                response.getWriter().close();
-            } catch (MalformedJwtException e) {
-                response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                response.setContentType("application/json");
-                response.getWriter().write("Token is not valid");
-                response.getWriter().close();
             }
         } else {
-            System.out.println(request.getRequestURI());
-            // Ochiq yo'llarni oxirida "/public" qo'yilsin
             if (!request.getRequestURI().endsWith("/public") && request.getRequestURI().equals("")) {
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.setContentType("application/json");

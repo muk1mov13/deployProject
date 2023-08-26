@@ -1,14 +1,16 @@
 package com.example.backend.security;
 
 import com.example.backend.entity.User;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.security.Key;
 import java.util.Date;
+
 //yangi security
 @Component
 public class JwtService {
@@ -29,7 +31,7 @@ public class JwtService {
                 .signWith(generateSecretKey())
                 .setSubject(user.getPhone())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60) ) //bir haftalik
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) //bir haftalik
                 .compact();
     }
 
@@ -40,7 +42,7 @@ public class JwtService {
     }
 
 
-    public String extractSubjectFromJWT(String token){
+    public String extractSubjectFromJWT(String token) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(generateSecretKey())
@@ -49,14 +51,47 @@ public class JwtService {
                 .getBody().getSubject();
     }
 
-    public Boolean isValid(String token) {
-            Jwts
-                    .parserBuilder()
-                    .setSigningKey(generateSecretKey())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody().getSubject();
+    public boolean validateToken(String authToken, HttpServletResponse response) throws IOException {
+        try {
+            Jwts.parser().setSigningKey(generateSecretKey()).parseClaimsJws(authToken);
             return true;
+        } catch (SignatureException e) {
+            // Invalid JWT signature
+            System.out.println("invalid signature");
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType("application/json");
+            response.getWriter().write("Invalid signature");
+            response.getWriter().close();
+        } catch (MalformedJwtException e) {
+            // Invalid JWT token
+            System.out.println("invalid token");
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType("application/json");
+            response.getWriter().write("Invalid token");
+            response.getWriter().close();
+        } catch (ExpiredJwtException e) {
+            // Expired JWT token
+            System.out.println("expired token");
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType("application/json");
+            response.getWriter().write("Expired token");
+            response.getWriter().close();
+        } catch (UnsupportedJwtException e) {
+            // Unsupported JWT token
+            System.out.println("unsupported token");
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType("application/json");
+            response.getWriter().write("Unsupported token");
+            response.getWriter().close();
+        } catch (IllegalArgumentException e) {
+            // JWT claims string is empty
+            System.out.println("string is empty");
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType("application/json");
+            response.getWriter().write("token is empty");
+            response.getWriter().close();
+        }
+        return false;
     }
 
 }
