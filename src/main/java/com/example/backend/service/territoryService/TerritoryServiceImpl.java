@@ -1,8 +1,3 @@
-
-
-
-
-
 package com.example.backend.service.territoryService;
 
 import com.example.backend.entity.Territory;
@@ -43,23 +38,6 @@ public class TerritoryServiceImpl implements TerritoryService {
         System.out.println(filteredTerritories.getContent());
         return fileService.createExcelFile(filteredTerritories.getContent(),columnNames,Territory.class,false);
     }
-
-
-//    @Override
-//    public List<Territory> getTerritoriesActive() {
-//        return territoryRepository.getTerritoriesActive().orElse(Collections.emptyList());
-//    }
-//
-//    @Override
-//    public HttpEntity<?> getTerritoriesByActive(boolean active) {
-//        List<Territory> territories = null;
-//        if (active) {
-//            territories = territoryRepository.getTerritoriesByActive(true).orElse(Collections.emptyList());
-//        } else {
-//            territories = territoryRepository.getTerritoriesByActive(false).orElse(Collections.emptyList());
-//        }
-//        return ResponseEntity.ok(territories);
-//    }
 
     @Override
     public HttpEntity<?> getTerritories(Integer page, Integer size, Boolean active, String search) {

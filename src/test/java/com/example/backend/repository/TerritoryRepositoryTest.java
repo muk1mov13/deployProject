@@ -1,32 +1,22 @@
 package com.example.backend.repository;
 
 import com.example.backend.entity.Territory;
-import com.example.backend.service.territoryService.TerritoryServiceImpl;
+import com.example.backend.projection.TerritoryProjection;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -35,45 +25,103 @@ public class TerritoryRepositoryTest {
     @Autowired
     private TerritoryRepository territoryRepository;
 
+    @BeforeEach
+    public void setUp() {
+        Territory testTerritory = Territory
+                .builder()
+                .id(UUID.randomUUID())
+                .name("test")
+                .region("test")
+                .active(true)
+                .Long(21254.21)
+                .Lat(65454.15)
+                .createdAt(Timestamp.valueOf(LocalDateTime.now()))
+                .build();
+        territoryRepository.save(testTerritory);
+    }
 
     @Test
-    public void testFindAllByNameOrRegionIgnoreCase() {
-        UUID uuidA = UUID.randomUUID();
-        UUID uuidB = UUID.randomUUID();
-        UUID uuidC = UUID.randomUUID();
-        UUID uuidD = UUID.randomUUID();
-        // Mock data
-        List<Territory> mockTerritories = new ArrayList<>();
-        mockTerritories.add(new Territory(uuidA, "Territory A", "Region X", true, null, null, Timestamp.valueOf(LocalDateTime.now())));
-        mockTerritories.add(new Territory(uuidB, "Territory B", "Region Y", true, null, null,Timestamp.valueOf(LocalDateTime.now())));
-        mockTerritories.add(new Territory(uuidC, "Territory C", "Region W", true, null, null,Timestamp.valueOf(LocalDateTime.now())));
-        mockTerritories.add(new Territory(uuidC, "Territory D", "Region Z", true, null, null,Timestamp.valueOf(LocalDateTime.now())));
+    public void testFindAllTerritoriesForClient() {
+        // Call the findAllTerritoriesForClient method
+        List<TerritoryProjection> territories = territoryRepository.findAllTerritoriesForClient();
 
-        // Mocking the repository behavior
-        Pageable pageable = (Pageable) PageRequest.of(0, 2);
-        when(territoryRepository.findAllByNameContainsIgnoreCaseOrRegionContainsIgnoreCaseOrderByCreatedAtDesc(anyString(), anyString(), eq(pageable)))
-                .thenAnswer(invocation -> {
-                    String name = invocation.getArgument(0);
-                    String region = invocation.getArgument(1);
-                    List<Territory> filteredTerritories = mockTerritories.stream()
-                            .filter(territory -> territory.getName().toLowerCase().contains(name.toLowerCase())
-                                    || territory.getRegion().toLowerCase().contains(region.toLowerCase()))
-                            .collect(Collectors.toList());
+        // Assert that the returned list is not empty
+        Assertions.assertFalse(territories.isEmpty());
+    }
 
-                    return new PageImpl<>(filteredTerritories, (org.springframework.data.domain.Pageable) pageable, filteredTerritories.size());
-                });
+    @Test
+    public void testFindAllTerritoriesForBot() {
+        // Create a sample pageable object
+        Pageable pageable = PageRequest.of(0, 10);
+        // Call the findAllTerritoriesForBot method
+        Page<Territory> territories = territoryRepository.findAllTerritoriesForBot(pageable);
+        // Assert that the returned page contains territories
+        Assertions.assertFalse(territories.isEmpty());
+    }
 
-        // Test the service method
-        Page<Territory> resultPage = territoryRepository.findAllByNameContainsIgnoreCaseOrRegionContainsIgnoreCaseOrderByCreatedAtDesc("Territory", "Region", (org.springframework.data.domain.Pageable) pageable);
+    @Test
+    public void testFindAllByNameContainsIgnoreCaseOrRegionContainsIgnoreCaseOrderByCreatedAtDesc() {
+        // Create sample territories
+        Territory territory1 = Territory
+                .builder()
+                .id(UUID.randomUUID())
+                .name("Test Territory")
+                .region("region 1")
+                .active(true)
+                .Long(21212154.21)
+                .Lat(6556454.15)
+                .createdAt(Timestamp.valueOf(LocalDateTime.now()))
+                .build();
 
-        // Assert the result
-        Assertions.assertEquals(4, resultPage.getTotalElements());
-        Assertions.assertEquals(uuidA, resultPage.getContent().get(0).getId());
-        Assertions.assertEquals(uuidB, resultPage.getContent().get(1).getId());
-        Assertions.assertEquals(uuidC, resultPage.getContent().get(2).getId());
+        Territory territory2 = Territory
+                .builder()
+                .id(UUID.randomUUID())
+                .name("Another Territory")
+                .region("Region 2")
+                .active(false)
+                .Long(21445254.21)
+                .Lat(6541154.15)
+                .createdAt(Timestamp.valueOf(LocalDateTime.now()))
+                .build();
 
-        // Verify the repository method was called with correct arguments
-        verify(territoryRepository, times(1)).findAllByNameContainsIgnoreCaseOrRegionContainsIgnoreCaseOrderByCreatedAtDesc("Territory", "Region", (org.springframework.data.domain.Pageable) pageable);
+        // Save the territories to the repository
+        territoryRepository.save(territory1);
+        territoryRepository.save(territory2);
+
+        // Create a sample pageable object
+        Pageable pageable = PageRequest.of(0, 10);
+
+        // Call the findAllByNameContainsIgnoreCaseOrRegionContainsIgnoreCaseOrderByCreatedAtDesc method
+        Page<Territory> territories = territoryRepository.findAllByNameContainsIgnoreCaseOrRegionContainsIgnoreCaseOrderByCreatedAtDesc(
+                "Territory", "Region", pageable);
+
+        // Assert that the page contains the expected territories
+        Assertions.assertEquals("Test Territory", territories.getContent().get(0).getName());
+        Assertions.assertEquals("Another Territory", territories.getContent().get(1).getName());
+    }
+
+    @Test
+    public void testFindAllByActiveAndNameContainsIgnoreCaseOrRegionContainsIgnoreCase() {
+        // Create a sample pageable object
+        Pageable pageable = PageRequest.of(0, 10);
+
+        // Call the findAllByActiveAndNameContainsIgnoreCaseOrRegionContainsIgnoreCase method
+        Page<Territory> territories = territoryRepository.findAllByActiveAndNameContainsIgnoreCaseOrRegionContainsIgnoreCase(
+                true, "", pageable);
+
+        // Assert that the returned page is not empty
+        Assertions.assertFalse(territories.isEmpty());
+    }
+
+    @Test
+    public void testFindByName() {
+        // Call the findByName method
+        Optional<Territory> foundTerritoryOptional = territoryRepository.findByName("test");
+
+        // Assert that the territory was found
+        Assertions.assertTrue(foundTerritoryOptional.isPresent());
+        Territory foundTerritory = foundTerritoryOptional.get();
+        Assertions.assertEquals("test", foundTerritory.getName());
     }
 }
 

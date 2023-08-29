@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -43,6 +45,7 @@ public class CompanyRepositoryTest {
         company.setSupport_phone("123-456-7890");
         company.setEmail("company@example.com");
         company.setAddress("Company Address");
+        company.setRegistration_date(Timestamp.valueOf(LocalDateTime.now()));
         companyRepository.save(company);
 
         // Get the projected data using the repository method that returns the projection
