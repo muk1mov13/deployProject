@@ -27,6 +27,8 @@ public interface TerritoryService {
 
     HttpEntity<?> updateTerritory(String id, Territory territory);
 
+    HttpEntity<?> getAllTerritoriesForMap();
+
     HttpEntity<?> getExcelFile(Boolean active, String search, List<String> columnNames, HttpServletResponse response);
 
 

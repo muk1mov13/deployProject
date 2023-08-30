@@ -4,6 +4,7 @@ package com.example.backend.repository;
 import com.example.backend.entity.CustomerCategory;
 import com.example.backend.entity.Territory;
 import com.example.backend.projection.ClientProjection;
+import com.example.backend.projection.TerritoryForMapProjection;
 import com.example.backend.projection.TerritoryProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -29,10 +30,13 @@ public interface TerritoryRepository extends JpaRepository<Territory, UUID>, Jpa
     Page<Territory> findAllByNameContainsIgnoreCaseOrRegionContainsIgnoreCaseOrderByCreatedAtDesc(String name, String region, Pageable pageable);
 
     @Query(value = """
-select t.id as value, t.name as label from Territory  t order by t.name
+select t.id as id, t.name as name from Territory  t order by t.name
 """)
     List<TerritoryProjection> findAllTerritoriesForClient();
-
+    @Query(value = """
+select t.id as id, t.name as name, t.Long as longitude, t.Lat as latitude from Territory t order by t.name
+""")
+    List<TerritoryForMapProjection> findAllTerritoriesForMap();
     @Query(value = "SELECT * FROM territory ", nativeQuery = true)
     Page<Territory> findAllTerritoriesForBot(Pageable pageable);
 

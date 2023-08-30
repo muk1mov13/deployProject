@@ -4,7 +4,6 @@ import com.example.backend.payload.request.ReqClientSave;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpEntity;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,7 +36,7 @@ public interface ClientService {
 
     HttpEntity<?> saveNewClient(ReqClientSave newClient);
 
-    HttpEntity<?> getClientsForMap();
+    HttpEntity<?> getClientsForMap(String cities);
 
     HttpEntity<?> editClientData(ReqClientSave newClient,UUID id) throws Exception;
 }

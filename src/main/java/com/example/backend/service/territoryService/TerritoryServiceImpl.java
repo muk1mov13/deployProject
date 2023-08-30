@@ -30,6 +30,10 @@ public class TerritoryServiceImpl implements TerritoryService {
     public HttpEntity<?> getAllTerritoriesForClient(){
         return ResponseEntity.ok(territoryRepository.findAllTerritoriesForClient());
     }
+    @Override
+    public HttpEntity<?> getAllTerritoriesForMap(){
+        return ResponseEntity.ok(territoryRepository.findAllTerritoriesForMap());
+    }
 
     @Override
     public HttpEntity<?> getExcelFile(Boolean active, String search, List<String> columnNames, HttpServletResponse response) {

@@ -3,6 +3,7 @@ import com.example.backend.constants.Day;
 import com.example.backend.entity.Client;
 import com.example.backend.payload.request.ReqClientSave;
 import com.example.backend.projection.ClientProjection;
+import com.example.backend.projection.ClientsForMapProjection;
 import com.example.backend.repository.ClientRepository;
 import com.example.backend.repository.CustomerCategoryRepository;
 import com.example.backend.repository.TerritoryRepository;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ClientServiceImpl implements ClientService{
@@ -101,8 +103,14 @@ public class ClientServiceImpl implements ClientService{
         }
     }
     @Override
-    public HttpEntity<?> getClientsForMap(){
-        return ResponseEntity.ok(clientRepository.findClientsForMap());
+    public HttpEntity<?> getClientsForMap(String cities){
+        System.out.println(cities);
+        List<UUID> cityList =  cities.isEmpty()?List.of():Arrays.stream(cities.split(","))
+                .map(UUID::fromString)
+                .collect(Collectors.toList());
+        System.out.println("list:"+cityList);
+        List<ClientsForMapProjection> clientsForMap = clientRepository.findClientsForMap(cityList);
+        return ResponseEntity.ok(clientsForMap);
     }
 
     @Override

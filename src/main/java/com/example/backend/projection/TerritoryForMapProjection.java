@@ -2,11 +2,9 @@ package com.example.backend.projection;
 
 import java.util.UUID;
 
-public interface ClientsForMapProjection {
+public interface TerritoryForMapProjection {
     UUID getId();
+    String getName();
     Double getLongitude();
     Double getLatitude();
-    String getName();
-    String getAddress();
-    boolean getActive();
 }

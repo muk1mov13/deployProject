@@ -38,6 +38,12 @@ public class TerritoryController {
         return territoryService.getTerritories(page, size, active, search);
     }
 
+    @PreAuthorize("hasRole('ROLE_SUPERVISOR')")
+    @GetMapping("/map")
+    public HttpEntity<?> getAllTerritoriesForMap() {
+        return territoryService.getAllTerritoriesForMap();
+    }
+
 
 
     @PreAuthorize("hasRole('ROLE_SUPERVISOR')")

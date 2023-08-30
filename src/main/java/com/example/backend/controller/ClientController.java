@@ -86,8 +86,9 @@ public class ClientController {
     }
     @PreAuthorize("hasRole('ROLE_SUPERVISOR')")
     @GetMapping("/map")
-    public HttpEntity<?> getClientsForMap(){
-            return clientService.getClientsForMap();
+    public HttpEntity<?> getClientsForMap(@RequestParam(defaultValue = "") String cities){
+        System.out.println("sasca"+cities);
+            return clientService.getClientsForMap(cities);
     }
 
 }

@@ -31,7 +31,7 @@ public class JwtService {
                 .signWith(generateSecretKey())
                 .setSubject(user.getPhone())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) //bir haftalik
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 60)) //bir haftalik
                 .compact();
     }
 
