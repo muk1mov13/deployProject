@@ -29,7 +29,7 @@ public interface TerritoryRepository extends JpaRepository<Territory, UUID>, Jpa
     Page<Territory> findAllByNameContainsIgnoreCaseOrRegionContainsIgnoreCaseOrderByCreatedAtDesc(String name, String region, Pageable pageable);
 
     @Query(value = """
-select t.id as value, t.name as label from Territory  t order by t.name
+select t.id as id, t.name as name from Territory  t order by t.name
 """)
     List<TerritoryProjection> findAllTerritoriesForClient();
 
