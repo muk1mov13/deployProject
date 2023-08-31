@@ -12,10 +12,10 @@ import java.util.UUID;
 
 
 @Entity
-@AllArgsConstructor
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "users")
 @Builder
 public class User implements UserDetails {
 
@@ -38,6 +38,12 @@ public class User implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Role> roles;
 
+    public User(String name, String phone, String password, List<Role> roles) {
+        this.name = name;
+        this.phone = phone;
+        this.password = password;
+        this.roles = roles;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
