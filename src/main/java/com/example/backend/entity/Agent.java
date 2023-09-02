@@ -1,11 +1,11 @@
 package com.example.backend.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,22 +13,13 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "agents")
+@DiscriminatorValue("AGENT")
 public class Agent extends User {
-
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
-    private UUID id;
 
     private Long chatId;
 
+    @Column(nullable = false)
+    private Timestamp created_at;
 
-    public Agent(String name, String phone, String password, List<Role> agent_roles, UUID id, Long chatId) {
-        super(name, phone, password, agent_roles);
-        this.id = id;
-        this.chatId = chatId;
-    }
 }

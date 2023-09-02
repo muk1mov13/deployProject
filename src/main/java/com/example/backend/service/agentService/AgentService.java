@@ -6,8 +6,7 @@ import org.springframework.http.HttpEntity;
 import java.util.UUID;
 
 public interface AgentService {
-
-    HttpEntity<?> getAgents();
+    HttpEntity<?> getAgents(Integer page, Integer size, Boolean active, String search);
 
     HttpEntity<?> saveAgent(Agent agent);
 

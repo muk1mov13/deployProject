@@ -19,10 +19,6 @@ public interface TerritoryService {
     //    repositoryga kelgan paramlarga qarab parametr qabul qiladi
     HttpEntity<?> getTerritories(Integer page, Integer size, Boolean active, String search);
 
-//    HttpEntity<?> getTerritoriesByActive(boolean active);
-//
-//    List<Territory> getTerritoriesActive();
-
     HttpEntity<?> saveTerritory(Territory territory);
 
     HttpEntity<?> updateTerritory(String id, Territory territory);

@@ -38,6 +38,7 @@ public class DataLoader implements CommandLineRunner {
     public List<Role> createRoles() {
         List<Role> tempRoles = new ArrayList<>();
         tempRoles.add(new Role(1, "ROLE_SUPERVISOR"));
+        tempRoles.add(new Role(2, "ROLE_AGENT"));
         return roleRepository.saveAll(tempRoles);
     }
 
@@ -64,8 +65,7 @@ public class DataLoader implements CommandLineRunner {
                     "supervisor",
                     "+998907397109",
                     passwordEncoder.encode("root123"),
-                    roles
-            );
+                    roles);
             savedSupervisor = userRepository.save(supervisor);
         }
         Company company = new Company(
@@ -80,8 +80,9 @@ public class DataLoader implements CommandLineRunner {
         );
         companyRepository.save(company);
     }
-    public void createSettings(){
-        List<String> names = List.of("Company Profile","Territory","Customer Category");
+
+    public void createSettings() {
+        List<String> names = List.of("Company Profile", "Territory", "Customer Category");
         for (String name : names) {
             settingsRepository.save(new Settings(UUID.randomUUID(), name));
         }

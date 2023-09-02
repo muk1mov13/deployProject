@@ -38,7 +38,6 @@ public class SecurityFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String access_token = request.getHeader("Authorization");
         if (access_token != null) {
-            System.out.println("kirdi");
             if (!jwtService.validateToken(access_token, response)) {
             } else {
                 String phone = jwtService.extractSubjectFromJWT(access_token);

@@ -1,8 +1,11 @@
 package com.example.backend.service.clientService;
+
 import com.example.backend.constants.Day;
 import com.example.backend.entity.Client;
+import com.example.backend.entity.ClientPlan;
 import com.example.backend.payload.request.ReqClientSave;
 import com.example.backend.projection.ClientProjection;
+import com.example.backend.repository.ClientPlanRepository;
 import com.example.backend.repository.ClientRepository;
 import com.example.backend.repository.CustomerCategoryRepository;
 import com.example.backend.repository.TerritoryRepository;
@@ -19,17 +22,22 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
-public class ClientServiceImpl implements ClientService{
+public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
     private final CustomerCategoryRepository customerCategoryRepository;
     private final TerritoryRepository territoryRepository;
     private final FileService fileService;
-    public ClientServiceImpl(ClientRepository clientRepository, CustomerCategoryRepository customerCategoryRepository, TerritoryRepository territoryRepository, FileService fileService) {
+
+    private final ClientPlanRepository clientPlanRepository;
+
+    public ClientServiceImpl(ClientRepository clientRepository, CustomerCategoryRepository customerCategoryRepository, TerritoryRepository territoryRepository, FileService fileService, ClientPlanRepository clientPlanRepository) {
         this.clientRepository = clientRepository;
         this.customerCategoryRepository = customerCategoryRepository;
         this.territoryRepository = territoryRepository;
         this.fileService = fileService;
+        this.clientPlanRepository = clientPlanRepository;
     }
+
     @Override
     public HttpEntity<?> getClientsByFilter(Boolean active,
                                             String location,
@@ -41,10 +49,10 @@ public class ClientServiceImpl implements ClientService{
                                             int pageNumber,
                                             int pageSize,
                                             String search
-    ){
+    ) {
 
-        Pageable pageable = pageSize==-1 ? Pageable.unpaged() : PageRequest.of(pageNumber > 0 ? pageNumber - 1 : 0, pageSize);
-        return ResponseEntity.ok(clientRepository.findClientsByFilter(active,cities,tin,categories,search,pageable));
+        Pageable pageable = pageSize == -1 ? Pageable.unpaged() : PageRequest.of(pageNumber > 0 ? pageNumber - 1 : 0, pageSize);
+        return ResponseEntity.ok(clientRepository.findClientsByFilter(active, cities, tin, categories, search, pageable));
     }
 
 
@@ -58,32 +66,41 @@ public class ClientServiceImpl implements ClientService{
                                       String inventory,
                                       String search,
                                       List<String> columnNames,
-                                      HttpServletResponse response){
+                                      HttpServletResponse response) {
         Pageable pageable = Pageable.unpaged();
-        Page<ClientProjection> filteredClients = clientRepository.findClientsByFilter(active, cities,tin, categories, search, pageable);
-        return fileService.createExcelFile(filteredClients.getContent(),columnNames,Client.class, true);
+        Page<ClientProjection> filteredClients = clientRepository.findClientsByFilter(active, cities, tin, categories, search, pageable);
+        return fileService.createExcelFile(filteredClients.getContent(), columnNames, Client.class, true);
     }
+
     @Override
-    public HttpEntity<?> saveNewClient(ReqClientSave newClient){
+    public HttpEntity<?> saveNewClient(ReqClientSave newClient) {
         System.out.println(newClient.getTin());
 
         Client save = clientRepository.save(new Client(newClient.getName(),
                 newClient.getAddress(),
                 newClient.getTelephone(),
-                Objects.equals(newClient.getTin(), "") ?null: newClient.getTin(),
+                Objects.equals(newClient.getTin(), "") ? null : newClient.getTin(),
                 newClient.isActive(),
                 newClient.getCompanyName(),
                 customerCategoryRepository.findById(newClient.getCategoryId()).get(),
                 territoryRepository.findById(newClient.getTerritoryId()).get(),
                 newClient.getLongitude(),
                 newClient.getLatitude(),
-               null, // this section should be changed in the next milestones
+                null, // this section should be changed in the next milestones
                 newClient.getReferencePoint(),
                 Timestamp.valueOf(LocalDateTime.now())
         ));
+        clientPlanRepository.save(ClientPlan
+                .builder()
+                .id(UUID.randomUUID())
+                .amount(600)
+                .client(save)
+                .build()
+        );
         return ResponseEntity.ok(save);
     }
-    public String[] filterArrayOfDays(String[] strArray){
+
+    public String[] filterArrayOfDays(String[] strArray) {
         Set<String> daysSet = new HashSet<>();
         for (String s : strArray) {
             if (isValidDay(s)) {
@@ -92,7 +109,8 @@ public class ClientServiceImpl implements ClientService{
         }
         return daysSet.toArray(new String[0]);
     }
-    public boolean isValidDay(String str){
+
+    public boolean isValidDay(String str) {
         try {
             Day.valueOf(str);
             return true;
@@ -100,29 +118,30 @@ public class ClientServiceImpl implements ClientService{
             return false;
         }
     }
+
     @Override
-    public HttpEntity<?> getClientsForMap(){
+    public HttpEntity<?> getClientsForMap() {
         return ResponseEntity.ok(clientRepository.findClientsForMap());
     }
 
     @Override
     public HttpEntity<?> editClientData(ReqClientSave client, UUID id) throws Exception {
-        Client oldClient = clientRepository.findById(id).orElseThrow(()->new Exception("This client is not found!"));
+        Client oldClient = clientRepository.findById(id).orElseThrow(() -> new Exception("This client is not found!"));
         Client save = clientRepository.save(new Client(
-                id,
-                client.getName(),
-                client.getAddress(),
-                client.getTelephone(),
-                client.getTin(),
-                client.isActive(),
-                client.getCompanyName(),
-                customerCategoryRepository.findById(client.getCategoryId()).orElseThrow(()-> new Exception("This category was not found!")),
-                territoryRepository.findById(client.getTerritoryId()).orElseThrow(()-> new Exception("This territory was not found!")),
-                client.getLongitude(),
-                client.getLatitude(),
-                null, // this section should be changed in the next milestones
-                client.getReferencePoint(),
-                oldClient.getRegistration_date()
+                        id,
+                        client.getName(),
+                        client.getAddress(),
+                        client.getTelephone(),
+                        client.getTin(),
+                        client.isActive(),
+                        client.getCompanyName(),
+                        customerCategoryRepository.findById(client.getCategoryId()).orElseThrow(() -> new Exception("This category was not found!")),
+                        territoryRepository.findById(client.getTerritoryId()).orElseThrow(() -> new Exception("This territory was not found!")),
+                        client.getLongitude(),
+                        client.getLatitude(),
+                        null, // this section should be changed in the next milestones
+                        client.getReferencePoint(),
+                        oldClient.getRegistration_date()
                 )
         );
         return ResponseEntity.ok(save);

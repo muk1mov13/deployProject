@@ -52,6 +52,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/company/**").permitAll()
                                 .requestMatchers("/api/territory/**").permitAll()
                                 .requestMatchers("/api/tujjor_bot/**").permitAll()
+                                .requestMatchers("/api/agent/**").permitAll()
                                 .anyRequest()
                                 .authenticated()
                 )
