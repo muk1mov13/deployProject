@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -31,5 +32,7 @@ public class ClientPlan {
 
     @ManyToOne
     private Client client;
+
+    private LocalDate localDate;
 
 }

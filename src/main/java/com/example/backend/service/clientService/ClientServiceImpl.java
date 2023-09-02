@@ -18,7 +18,9 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -95,6 +97,7 @@ public class ClientServiceImpl implements ClientService {
                 .id(UUID.randomUUID())
                 .amount(600)
                 .client(save)
+                .localDate(LocalDate.parse(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))))
                 .build()
         );
         return ResponseEntity.ok(save);
