@@ -18,7 +18,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 @Builder
 public class User implements UserDetails {
 
